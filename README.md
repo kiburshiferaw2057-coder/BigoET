@@ -1,2 +1,0 @@
-# BigoET
-onlne
