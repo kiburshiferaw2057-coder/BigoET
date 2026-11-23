@@ -1,0 +1,58 @@
+{
+  "en": {
+    "app_name": "BINGO-ET",
+    "select_card": "Select Card (1-600)",
+    "next_round": "Next Round Timer",
+    "balance_label": "Balance",
+    "deposit_info": "Payment Methods & Reference Details",
+    "language_label": "Language",
+    "play_mode": "Game Mode",
+    "draw_number": "Draw Next Ball",
+    "reset_round": "Reset Draw",
+    "claim_bingo": "Claim Bingo",
+    "rules_title": "Game Rules & Steps",
+    "steps_title": "Round Steps (Bingo 1020 v3.0)"
+  },
+  "am": {
+    "app_name": "BINGO-ET",
+    "select_card": "ካርድ ይምረጡ (1-600)",
+    "next_round": "የቀጣይ ዙር ሰዓት",
+    "balance_label": "ቀሪ ሂሳብ",
+    "deposit_info": "የክፍያ ዘዴዎች እና ማጣቀሻ መረጃ",
+    "language_label": "ቋንቋ",
+    "play_mode": "የጨዋታ አይነት",
+    "draw_number": "ቀጣይ ቁጥር ጥራ",
+    "reset_round": "ዙር ዳግም አስጀምር",
+    "claim_bingo": "ቢንጎ አረጋግጥ",
+    "rules_title": "የጨዋታ ህጎች እና ደንቦች",
+    "steps_title": "የዙር ሂደት ደረጃዎች (Bingo 1020 v3.0)"
+  },
+  "om": {
+    "app_name": "BINGO-ET",
+    "select_card": "Kaardii Filadhu (1-600)",
+    "next_round": "Sa'aatii Marsaa Itti Aanuu",
+    "balance_label": "Hafuura Herregaa",
+    "deposit_info": "Mala Kaffaltii fi Odeeffannoo Wabii",
+    "language_label": "Afaan",
+    "play_mode": "Gosa Taphaa",
+    "draw_number": "Lakkoofsa Itti Aanuu Baasi",
+    "reset_round": "Marsaa Haaromsi",
+    "claim_bingo": "Biingoo Mirkaneessi",
+    "rules_title": "Seera Taphaa fi Qajeelfama",
+    "steps_title": "Tartiiba Marsaa (Bingo 1020 v3.0)"
+  },
+  "ti": {
+    "app_name": "BINGO-ET",
+    "select_card": "ካርድ ምረጽ (1-600)",
+    "next_round": "ሰዓት ቀጻሊ ዙር",
+    "balance_label": "ዝተረፈ ሒሳብ",
+    "deposit_info": "መንገድታት ክፍሊትን መወከሊ ሓበሬታን",
+    "language_label": "ቋንቋ",
+    "play_mode": "ዓይነት ጸወታ",
+    "draw_number": "ቀጻሊ ቁጽሪ ስሓብ",
+    "reset_round": "ዙር ዳግማይ ጀምር",
+    "claim_bingo": "ቢንጎ ኣረጋግጽ",
+    "rules_title": "ሕግታትን ስርዓታትን ጸወታ",
+    "steps_title": "ደረጃታት ዙር (Bingo 1020 v3.0)"
+  }
+}
