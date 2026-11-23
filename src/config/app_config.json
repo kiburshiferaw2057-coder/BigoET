@@ -1,0 +1,85 @@
+{
+  "appName": "BINGO-ET",
+  "version": "3.0.0",
+  "theme": {
+    "primaryBlue": "#0B57D0",
+    "accentGold": "#F9AB00",
+    "accentRed": "#D93025",
+    "surfaceLight": "#F8FAFC"
+  },
+  "supportedLanguages": [
+    "en",
+    "am",
+    "om",
+    "ti"
+  ],
+  "defaultLanguage": "en",
+  "roundLifecycle": {
+    "roundIntervalSeconds": 120,
+    "numberDrawIntervalMs": 3000,
+    "maxCalledNumbers": 75,
+    "steps": [
+      "1_select_language_and_mode",
+      "2_select_card_1_to_600",
+      "3_wait_or_enter_round_countdown",
+      "4_mark_drawn_numbers_and_free_center",
+      "5_claim_bingo_pattern_and_verify",
+      "6_settle_round_and_start_next_120s_cycle"
+    ]
+  },
+  "gameModes": [
+    {
+      "id": "classic_75_line",
+      "ruleSummary": "Complete any full horizontal row, vertical column, or main diagonal (center cell is FREE)."
+    },
+    {
+      "id": "four_corners",
+      "ruleSummary": "Mark all four outer corner cells (row 0/col 0, row 0/col 4, row 4/col 0, row 4/col 4)."
+    },
+    {
+      "id": "x_pattern",
+      "ruleSummary": "Mark both main diagonals forming an X across all 9 diagonal cells."
+    },
+    {
+      "id": "full_house_blackout",
+      "ruleSummary": "Mark every number on the 5x5 card (all 24 numbered cells plus FREE center)."
+    }
+  ],
+  "cardPoolRange": {
+    "min": 1,
+    "max": 600
+  },
+  "paymentMethods": {
+    "currency": "Birr",
+    "accountHolder": "Kibur shiferaw kassa",
+    "channels": [
+      {
+        "id": "mobile_money_telebirr_contact",
+        "label": "Mobile / Telebirr Contacts",
+        "values": [
+          "0912341486",
+          "0941705946"
+        ],
+        "instructions": "Include your account/card reference when submitting payment proof for server verification."
+      },
+      {
+        "id": "cbe",
+        "label": "Commercial Bank of Ethiopia (CBE)",
+        "accountNumber": "1000058081624",
+        "instructions": "Transfer in Birr and record the bank transaction reference for verification."
+      },
+      {
+        "id": "boa",
+        "label": "Bank of Abyssinia (BOA)",
+        "accountNumber": "82323805",
+        "instructions": "Transfer in Birr and record the bank transaction reference for verification."
+      }
+    ]
+  },
+  "displayRules": {
+    "showBalance": true,
+    "showBirrOnly": true,
+    "hidePercentageMetric": true,
+    "hideAlarmIcon": true
+  }
+}
