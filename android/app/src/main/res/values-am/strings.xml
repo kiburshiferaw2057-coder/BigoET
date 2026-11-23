@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">BINGO-ET</string>
+    <string name="select_card">ካርድ ይምረጡ (1-600)</string>
+    <string name="balance_label">ቀሪ ሂሳብ</string>
+    <string name="claim_bingo">ቢንጎ አረጋግጥ</string>
+</resources>
