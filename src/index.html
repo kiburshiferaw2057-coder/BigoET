@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BINGO-ET</title>
+  <style>
+    :root {
+      --blue: #0B57D0;
+      --gold: #F9AB00;
+      --red: #D93025;
+      --bg: #F4F7FB;
+      --card: #FFFFFF;
+    }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: #111827; }
+    header { background: var(--blue); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--gold); }
+    .brand-wrap { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 38px; height: 38px; border-radius: 10px; object-fit: cover; border: 2px solid var(--gold); background: #fff; }
+    .brand { font-weight: 800; font-size: 1.2rem; letter-spacing: 0.5px; }
+    .container { max-width: 780px; margin: 18px auto; padding: 0 14px; }
+    .panel { background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+    .cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 700; background: #EFF6FF; border: 1px solid #BFDBFE; cursor: pointer; user-select: none; }
+    .cell.marked { background: #16A34A; color: #fff; border-color: #15803D; }
+    .cell.free { background: var(--gold); color: #111; }
+    select, input, button { padding: 8px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 0.92rem; }
+    button { background: var(--blue); color: #fff; border: none; font-weight: 600; cursor: pointer; }
+    button.secondary { background: #E2E8F0; color: #111827; }
+    button.claim { background: var(--red); color: #fff; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .pill { background: #E0E7FF; color: var(--blue); padding: 6px 10px; border-radius: 999px; font-weight: 600; }
+    .balls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 28px; }
+    .ball { background: #DBEAFE; color: #1E3A8A; padding: 4px 8px; border-radius: 999px; font-weight: 700; font-size: 0.85rem; }
+    ul { margin: 8px 0 0 18px; padding: 0; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-wrap">
+      <img src="assets/bingo-et-logo.png" alt="BINGO-ET Logo" class="brand-logo" />
+      <div class="brand" id="appTitle">BINGO-ET</div>
+    </div>
+    <div class="row">
+      <label for="langSelect" id="langLabel" style="font-size:0.85rem;">Language</label>
+      <select id="langSelect">
+        <option value="en">English</option>
+        <option value="am">አማርኛ</option>
+        <option value="om">Afaan Oromoo</option>
+        <option value="ti">ትግርኛ</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="panel row" style="justify-content:space-between;">
+      <div>
+        <strong id="balanceLabel">Balance</strong>:
+        <span class="pill" id="balanceValue">0.00 Birr</span>
+      </div>
+      <div>
+        <strong id="timerLabel">Next Round Timer</strong>:
+        <span class="pill" id="timerValue">02:00</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <label id="selectCardLabel" for="cardNum">Select Card (1-600)</label>
+        <input id="cardNum" type="number" min="1" max="600" value="1" />
+        <label id="modeLabel" for="modeSelect">Game Mode</label>
+        <select id="modeSelect">
+          <option value="classic_75_line">Classic 75 Line</option>
+          <option value="four_corners">Four Corners</option>
+          <option value="x_pattern">X Pattern</option>
+          <option value="full_house_blackout">Full House</option>
+        </select>
+      </div>
+      <div class="grid" id="bingoGrid"></div>
+      <div class="row" style="margin-top:12px;">
+        <button id="drawBtn">Draw Next Ball</button>
+        <button id="resetBtn" class="secondary">Reset Draw</button>
+        <button id="claimBtn" class="claim">Claim Bingo</button>
+        <span id="statusMsg" style="font-weight:600;"></span>
+      </div>
+      <div class="balls" id="calledBalls"></div>
+    </div>
+
+    <div class="panel">
+      <h3 id="rulesTitle" style="margin-top:0;">Game Rules & Steps</h3>
+      <ul>
+        <li><strong>Classic 75 Line:</strong> Complete any full row, column, or diagonal (center FREE space counts as marked).</li>
+        <li><strong>Four Corners:</strong> Mark all four outer corner cells.</li>
+        <li><strong>X Pattern:</strong> Mark both main diagonals forming an X.</li>
+        <li><strong>Full House:</strong> Mark all 24 numbered cells plus the FREE center.</li>
+      </ul>
+      <h4 id="stepsTitle" style="margin:12px 0 6px;">Round Steps (Bingo 1020 v3.0)</h4>
+      <ol style="margin:0 0 0 18px; padding:0;">
+        <li>Choose language (English, Amharic, Afan Oromo, or Tigrigna) and select a game mode.</li>
+        <li>Pick a card number from 1 to 600 and monitor the 120-second round timer.</li>
+        <li>Mark matching called numbers (1–75) on your 5×5 card.</li>
+        <li>Press Claim Bingo when your selected pattern is completed.</li>
+      </ol>
+    </div>
+
+    <div class="panel" id="paymentPanel">
+      <h3 id="depositTitle" style="margin-top:0;">Payment Methods & Reference Details</h3>
+      <p style="margin:4px 0;"><strong>Mobile / Telebirr Contacts:</strong> 0912341486, 0941705946</p>
+      <p style="margin:4px 0;"><strong>CBE:</strong> 1000058081624</p>
+      <p style="margin:4px 0;"><strong>BOA:</strong> 82323805</p>
+      <p style="margin:4px 0;"><strong>Account Name:</strong> Kibur shiferaw kassa</p>
+    </div>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        app_name: "BINGO-ET", select_card: "Select Card (1-600)", next_round: "Next Round Timer",
+        balance_label: "Balance", deposit_info: "Payment Methods & Reference Details", language_label: "Language",
+        play_mode: "Game Mode", draw_number: "Draw Next Ball", reset_round: "Reset Draw",
+        claim_bingo: "Claim Bingo", rules_title: "Game Rules & Steps", steps_title: "Round Steps (Bingo 1020 v3.0)"
+      },
+      am: {
+        app_name: "BINGO-ET", select_card: "ካርድ ይምረጡ (1-600)", next_round: "የቀጣይ ዙር ሰዓት",
+        balance_label: "ቀሪ ሂሳብ", deposit_info: "የክፍያ ዘዴዎች እና ማጣቀሻ መረጃ", language_label: "ቋንቋ",
+        play_mode: "የጨዋታ አይነት", draw_number: "ቀጣይ ቁጥር ጥራ", reset_round: "ዙር ዳግም አስጀምር",
+        claim_bingo: "ቢንጎ አረጋግጥ", rules_title: "የጨዋታ ህጎች እና ደንቦች", steps_title: "የዙር ሂደት ደረጃዎች (Bingo 1020 v3.0)"
+      },
+      om: {
+        app_name: "BINGO-ET", select_card: "Kaardii Filadhu (1-600)", next_round: "Sa'aatii Marsaa Itti Aanuu",
+        balance_label: "Hafuura Herregaa", deposit_info: "Mala Kaffaltii fi Odeeffannoo Wabii", language_label: "Afaan",
+        play_mode: "Gosa Taphaa", draw_number: "Lakkoofsa Itti Aanuu Baasi", reset_round: "Marsaa Haaromsi",
+        claim_bingo: "Biingoo Mirkaneessi", rules_title: "Seera Taphaa fi Qajeelfama", steps_title: "Tartiiba Marsaa (Bingo 1020 v3.0)"
+      },
+      ti: {
+        app_name: "BINGO-ET", select_card: "ካርድ ምረጽ (1-600)", next_round: "ሰዓት ቀጻሊ ዙር",
+        balance_label: "ዝተረፈ ሒሳብ", deposit_info: "መንገድታት ክፍሊትን መወከሊ ሓበሬታን", language_label: "ቋንቋ",
+        play_mode: "ዓይነት ጸወታ", draw_number: "ቀጻሊ ቁጽሪ ስሓብ", reset_round: "ዙር ዳግማይ ጀምር",
+        claim_bingo: "ቢንጎ ኣረጋግጽ", rules_title: "ሕግታትን ስርዓታትን ጸወታ", steps_title: "ደረጃታት ዙር (Bingo 1020 v3.0)"
+      }
+    };
+
+    let currentGrid = [];
+    let calledNumbers = [];
+    let manualMarked = new Set(["2,2"]);
+
+    function applyLang(lang) {
+      const t = translations[lang] || translations.en;
+      document.getElementById("appTitle").textContent = t.app_name;
+      document.getElementById("selectCardLabel").textContent = t.select_card;
+      document.getElementById("timerLabel").textContent = t.next_round;
+      document.getElementById("balanceLabel").textContent = t.balance_label;
+      document.getElementById("depositTitle").textContent = t.deposit_info;
+      document.getElementById("langLabel").textContent = t.language_label;
+      document.getElementById("modeLabel").textContent = t.play_mode;
+      document.getElementById("drawBtn").textContent = t.draw_number;
+      document.getElementById("resetBtn").textContent = t.reset_round;
+      document.getElementById("claimBtn").textContent = t.claim_bingo;
+      document.getElementById("rulesTitle").textContent = t.rules_title;
+      document.getElementById("stepsTitle").textContent = t.steps_title;
+    }
+
+    function generateGrid(cardNum) {
+      const n = Math.min(600, Math.max(1, parseInt(cardNum || 1, 10)));
+      const ranges = [[1,15],[16,30],[31,45],[46,60],[61,75]];
+      let seed = n * 2654435761;
+      const rand = () => {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      };
+      const grid = Array.from({ length: 5 }, () => Array(5).fill(null));
+      for (let c = 0; c < 5; c++) {
+        const [lo, hi] = ranges[c];
+        const pool = [];
+        for (let v = lo; v <= hi; v++) pool.push(v);
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(rand() * (i + 1));
+          [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        for (let r = 0; r < 5; r++) {
+          grid[r][c] = (r === 2 && c === 2) ? "FREE" : pool[r];
+        }
+      }
+      return grid;
+    }
+
+    function renderGrid() {
+      const gridEl = document.getElementById("bingoGrid");
+      gridEl.innerHTML = "";
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const val = currentGrid[r][c];
+          const key = `${r},${c}`;
+          const cell = document.createElement("div");
+          if (r === 2 && c === 2) {
+            cell.className = "cell free";
+            cell.textContent = "FREE";
+          } else {
+            const isMarked = manualMarked.has(key) || calledNumbers.includes(val);
+            cell.className = isMarked ? "cell marked" : "cell";
+            cell.textContent = val;
+            cell.addEventListener("click", () => {
+              if (manualMarked.has(key)) manualMarked.delete(key);
+              else manualMarked.add(key);
+              renderGrid();
+            });
+          }
+          gridEl.appendChild(cell);
+        }
+      }
+      const ballsEl = document.getElementById("calledBalls");
+      ballsEl.innerHTML = calledNumbers.map((b) => `<span class="ball">${b}</span>`).join("");
+    }
+
+    function checkWin() {
+      const mode = document.getElementById("modeSelect").value;
+      const marked = currentGrid.map((row, r) =>
+        row.map((val, c) => (r === 2 && c === 2) || manualMarked.has(`${r},${c}`) || calledNumbers.includes(val))
+      );
+      if (mode === "four_corners") return marked[0][0] && marked[0][4] && marked[4][0] && marked[4][4];
+      if (mode === "x_pattern") return [0,1,2,3,4].every(i => marked[i][i]) && [0,1,2,3,4].every(i => marked[i][4-i]);
+      if (mode === "full_house_blackout") return marked.every(row => row.every(Boolean));
+      for (let i = 0; i < 5; i++) {
+        if (marked[i].every(Boolean)) return true;
+        if ([0,1,2,3,4].every(r => marked[r][i])) return true;
+      }
+      return [0,1,2,3,4].every(i => marked[i][i]) || [0,1,2,3,4].every(i => marked[i][4-i]);
+    }
+
+    document.getElementById("drawBtn").addEventListener("click", () => {
+      if (calledNumbers.length >= 75) return;
+      const pool = [];
+      for (let n = 1; n <= 75; n++) if (!calledNumbers.includes(n)) pool.push(n);
+      const next = pool[Math.floor(Math.random() * pool.length)];
+      calledNumbers.push(next);
+      renderGrid();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      calledNumbers = [];
+      manualMarked = new Set(["2,2"]);
+      document.getElementById("statusMsg").textContent = "";
+      renderGrid();
+    });
+
+    document.getElementById("claimBtn").addEventListener("click", () => {
+      const won = checkWin();
+      document.getElementById("statusMsg").textContent = won ? "BINGO verified!" : "Pattern not complete yet.";
+    });
+
+    let remaining = 120;
+    setInterval(() => {
+      remaining = remaining > 0 ? remaining - 1 : 120;
+      const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+      const s = String(remaining % 60).padStart(2, "0");
+      document.getElementById("timerValue").textContent = `${m}:${s}`;
+    }, 1000);
+
+    document.getElementById("langSelect").addEventListener("change", (e) => applyLang(e.target.value));
+    document.getElementById("cardNum").addEventListener("input", (e) => {
+      currentGrid = generateGrid(e.target.value);
+      manualMarked = new Set(["2,2"]);
+      renderGrid();
+    });
+
+    currentGrid = generateGrid(1);
+    renderGrid();
+  </script>
+</body>
+</html>
