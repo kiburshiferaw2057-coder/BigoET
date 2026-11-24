@@ -35,7 +35,10 @@ jobs:
           ls -la android/
           echo "=== src/ contents ==="
           ls -la src/
-          test -f android/settings.gradle  test -f android/settings.gradle.kts  (echo "ERROR: settings.gradle missing in android/" && exit 1)
+          if [ ! -f "android/settings.gradle" ] && [ ! -f "android/settings.gradle.kts" ]; then
+            echo "ERROR: settings.gradle missing in android/"
+            exit 1
+          fi
 
       - name: Build Full Debug APK
         run: |
