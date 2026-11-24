@@ -42,11 +42,37 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
           echo "$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
       - name: Validate JSON config, locales, logo/mipmap assets, and engine syntax
+        shell: bash
         run: |
-          node -e "const fs = require('fs'); JSON.parse(fs.readFileSync('src/config/app_config.json','utf8')); JSON.parse(fs.readFileSync('src/i18n/translations.json','utf8')); if (!fs.existsSync('src/assets/bingo-et-logo.png')  !fs.existsSync('android/app/src/main/res/drawable/ic_bingo_et_logo.png')  !fs.existsSync('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png')) throw new Error('Missing logo or mipmap assets'); require('./src/game/bingoEngineV2.js'); require('./src/payments/paymentConfigService.js'); console.log('All modules, logo/mipmap assets, and configs valid.');"
+          set -e
+          node -e '
+          const fs = require("fs");
+          JSON.parse(fs.readFileSync("src/config/app_config.json", "utf8"));
+          JSON.parse(fs.readFileSync("src/i18n/translations.json", "utf8"));
+          const requiredAssets = [
+            "src/assets/bingo-et-logo.png",
+            "android/app/src/main/res/drawable/ic_bingo_et_logo.png",
+            "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+          ];
+          for (const p of requiredAssets) {
+            if (!fs.existsSync(p)) {
+              throw new Error("Missing asset: " + p);
+            }
+          }
+          require("./src/game/bingoEngineV2.js");
+          require("./src/payments/paymentConfigService.js");
+          console.log("All modules, logo/mipmap assets, and configs valid.");
+          '
       - name: Build Android Debug APK
+        shell: bash
         run: |
-          cd android && gradle assembleDebug --stacktrace
+          set -e
+          cd android
+          if [ -x "./gradlew" ]; then
+            ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
