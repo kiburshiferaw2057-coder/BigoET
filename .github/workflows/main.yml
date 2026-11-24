@@ -41,6 +41,11 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
           echo "$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+      - name: Clean invalid non-resource README.md files in android/res
+        shell: bash
+        run: |
+          set -e
+          find android/app/src/main/res -type f -name "README.md" -delete
       - name: Validate JSON config, locales, logo/mipmap assets, and engine syntax
         shell: bash
         run: |
