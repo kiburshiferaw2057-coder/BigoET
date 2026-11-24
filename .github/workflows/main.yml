@@ -26,33 +26,49 @@ jobs:
       - name: Accept Android SDK Licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Verify repository structure
+      - name: Detect and verify project layout
         run: |
-          echo "=== Root files ==="
+          echo "=== Root directory ==="
           ls -la
-          echo "=== App module files ==="
-          ls -la app/ || true
-          echo "=== Layouts ==="
-          find app/src/main/res -maxdepth 3 2>/dev/null || true
-          test -f gradlew || (echo "ERROR: gradlew missing" && exit 1)
-          test -d app/src/main || (echo "ERROR: app/src/main missing" && exit 1)
+          echo "=== android directory ==="
+          ls -la android/ 2>/dev/null || true
+          echo "=== src directory ==="
+          ls -la src/ 2>/dev/null || true
+
+          if [ -f "gradlew" ]; then
+            PROJECT_DIR="."
+          elif [ -f "android/gradlew" ]; then
+            PROJECT_DIR="android"
+          else
+            echo "ERROR: gradlew not found at root or in android/"
+            exit 1
+          fi
+
+          echo "PROJECT_DIR=$PROJECT_DIR"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+          echo "=== Resources / Layouts ==="
+          find "$PROJECT_DIR" -path "*/src/main/res*" -maxdepth 5 2>/dev/null || true
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x "$PROJECT_DIR/gradlew"
 
       - name: Build Full Debug APK
-        run: ./gradlew clean assembleDebug --stacktrace
+        run: |
+          cd "$PROJECT_DIR"
+          ./gradlew clean assembleDebug --stacktrace
 
       - name: Verify APK contents
         run: |
-          APK_PATH=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          APK_PATH=$(find "$PROJECT_DIR" -path "*/build/outputs/apk/debug/*.apk" | head -n 1)
           echo "Built APK: $APK_PATH"
-          test -f "$APK_PATH"
-          unzip -l "$APK_PATH" | head -n 40
+          test -n "$APK_PATH" && test -f "$APK_PATH"
+          echo "APK_PATH=$APK_PATH" >> "$GITHUB_ENV"
+          unzip -l "$APK_PATH" | head -n 50
 
       - name: Upload BINGO-ET APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BINGO-ET-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: ${{ env.APK_PATH }}
           if-no-files-found: error
